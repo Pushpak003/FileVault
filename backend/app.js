@@ -1,5 +1,11 @@
 const express = require("express");
+const path = require("path");
 const dotenv = require("dotenv");
+
+// Load env variables before importing modules that may read process.env.
+dotenv.config({ path: path.resolve(__dirname, ".env") });
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
+
 const fileRoutes = require("./routes/file.routes");
 const authRoutes = require("./routes/auth.routes");
 const userFileRoutes = require("./routes/userFile.routes");
@@ -10,9 +16,6 @@ const compression = require('compression');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpecs = require('./config/swagger');
 const { apiLimiter, authLimiter } = require("./middlewares/rateLimiting.middleware");
-
-// Load env variables
-dotenv.config();
 
 // Initialize express app
 const app = express();
