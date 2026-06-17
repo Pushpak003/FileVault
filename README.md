@@ -49,7 +49,7 @@ Perfect for building secure file sharing platforms, document management systems,
 
 ### 🔐 **Authentication & Security**
 - ✅ JWT-based authentication with secure token management
-- ✅ Email verification system with automated emails (Gmail SMTP)
+- ✅ Email verification system with automated emails (Resend)
 - ✅ Password reset functionality
 - ✅ Bcrypt password hashing
 - ✅ Rate limiting on all endpoints
@@ -93,7 +93,7 @@ Perfect for building secure file sharing platforms, document management systems,
 - **Database:** PostgreSQL (Aiven Cloud)
 - **Storage:** Cloudflare R2 (S3-compatible)
 - **Authentication:** JWT + Bcrypt
-- **Email:** Nodemailer (Gmail SMTP)
+- **Email:** Resend (HTTP API)
 - **Logging:** Winston
 - **Security:** Helmet.js, CORS, Rate Limiting
 
@@ -120,7 +120,7 @@ Perfect for building secure file sharing platforms, document management systems,
 - Docker and Docker Compose (recommended)
 - PostgreSQL database (or use Aiven free tier)
 - Cloudflare R2 bucket
-- Gmail account for SMTP (or other email service)
+- Resend account for sending emails (free tier available)
 
 ### **1. Clone Repository**
 ```bash
@@ -149,13 +149,14 @@ R2_ACCESS_KEY_ID=your-r2-access-key
 R2_SECRET_ACCESS_KEY=your-r2-secret-key
 R2_BUCKET_NAME=your-bucket-name
 
-# Email Configuration (Gmail)
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_SECURE=false
-EMAIL_USER=your-email@gmail.com
-EMAIL_PASS=your-app-password
-EMAIL_FROM=FileVault <your-email@gmail.com>
+# Email Configuration (Resend — HTTP API, works reliably on hosts like Render
+# that block raw SMTP ports 587/465)
+RESEND_API_KEY=re_your_resend_api_key
+EMAIL_FROM=FileVault <onboarding@resend.dev>
+
+# Public URL of the backend itself (used to build verification links).
+# Set this to your deployed backend URL in production (e.g. Render URL).
+BACKEND_URL=http://localhost:3000
 
 # Frontend URL
 FRONTEND_URL=http://localhost:3001
@@ -213,10 +214,11 @@ npm start
 2. Generate API tokens with R2 permissions
 3. Add credentials to `.env`
 
-### **Email Setup (Gmail)**
-1. Enable 2-Step Verification in Google Account
-2. Generate App Password: [Google App Passwords](https://myaccount.google.com/apppasswords)
-3. Use app password (16 characters, no spaces) in `EMAIL_PASS`
+### **Email Setup (Resend)**
+1. Create a free account at [resend.com](https://resend.com) and copy your API key into `RESEND_API_KEY`.
+2. For quick testing, you can send from `onboarding@resend.dev` — but Resend only delivers emails sent from that address to the email you signed up with, not to arbitrary recipients.
+3. For real users to receive emails, verify your own domain under **Domains** in the Resend dashboard, then set `EMAIL_FROM` to an address on that domain (e.g. `FileVault <noreply@yourdomain.com>`).
+4. Resend sends over HTTPS (port 443), so it works on hosts like Render where raw SMTP ports are blocked — this is why the project uses it instead of Gmail SMTP/nodemailer.
 
 ### **Rate Limiting**
 ```javascript

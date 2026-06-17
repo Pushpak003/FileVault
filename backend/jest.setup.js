@@ -1,11 +1,7 @@
 process.env.NODE_ENV = 'test';
 process.env.JWT_SECRET = 'test-jwt-secret-for-testing';
 process.env.JWT_EXPIRES_IN = '7d';
-process.env.EMAIL_HOST = 'smtp.gmail.com';
-process.env.EMAIL_PORT = '587';
-process.env.EMAIL_SECURE = 'false';
-process.env.EMAIL_USER = 'test@test.com';
-process.env.EMAIL_PASS = 'test-pass';
+process.env.RESEND_API_KEY = 're_test_dummy_key';
 process.env.EMAIL_FROM = 'Test <test@test.com>';
 process.env.FRONTEND_URL = 'http://localhost:3001';
 process.env.BACKEND_URL = 'http://localhost:3000';

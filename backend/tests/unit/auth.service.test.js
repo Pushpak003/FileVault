@@ -1,4 +1,6 @@
-jest.mock('nodemailer');
+jest.mock('../../utils/email', () => ({
+  sendEmail: jest.fn().mockResolvedValue({ success: true, id: 'mock-email-id' }),
+}));
 jest.mock('../../utils/logger');
 jest.mock('../../config/db', () => require('../../__mocks__/db'));
 jest.mock('crypto', () => ({

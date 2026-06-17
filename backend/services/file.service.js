@@ -8,29 +8,9 @@ const {
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { pool, query } = require("../config/db");
 const crypto = require("crypto");
-const nodemailer = require("nodemailer");
+const { sendEmail } = require("../utils/email");
 const logger = require("../utils/logger");
 const LocalStorageService = require("./localStorage.service");
-
-// Lazy nodemailer transporter
-let _transporter = null;
-const getTransporter = () => {
-  if (!_transporter) {
-    _transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST || "smtp.gmail.com",
-      port: parseInt(process.env.EMAIL_PORT || "587"),
-      secure: process.env.EMAIL_SECURE === "true",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-      connectionTimeout: 10000,
-      greetingTimeout: 10000,
-      socketTimeout: 10000,
-    });
-  }
-  return _transporter;
-};
 
 // Initialize local storage service if not using R2
 const localStorage = storageConfig.type === 'LOCAL' ? new LocalStorageService(storageConfig.uploadDir) : null;
@@ -278,8 +258,7 @@ const FileService = {
       const baseUrl = process.env.FRONTEND_URL || "http://localhost:3000";
       const shareableLink = `${baseUrl}/shared/${accessToken}`;
 
-      getTransporter().sendMail({
-        from: process.env.EMAIL_FROM || '"FileVault" <no-reply@filevault.com>',
+      sendEmail({
         to: recipientEmail,
         subject: `${senderName} shared a file with you on FileVault`,
         html: `

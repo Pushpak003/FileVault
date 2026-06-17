@@ -3,27 +3,7 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const logger = require("../utils/logger");
 const { pool, query } = require("../config/db");
-const nodemailer = require("nodemailer");
-
-// Lazy nodemailer transporter (created on first use)
-let _transporter = null;
-const getTransporter = () => {
-  if (!_transporter) {
-    _transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST || "smtp.gmail.com",
-      port: parseInt(process.env.EMAIL_PORT || "587"),
-      secure: process.env.EMAIL_SECURE === "true",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-      connectionTimeout: 10000, // fail fast instead of hanging if the port is blocked
-      greetingTimeout: 10000,
-      socketTimeout: 10000,
-    });
-  }
-  return _transporter;
-};
+const { sendEmail } = require("../utils/email");
 
 const AuthService = {
   // Register a new user
@@ -77,9 +57,6 @@ const AuthService = {
   sendVerificationEmail: async (email, name, token) => {
     try {
       logger.info(`📧 Starting email send process for ${email}`);
-      logger.info(`📧 Email config - Host: ${process.env.EMAIL_HOST}, Port: ${process.env.EMAIL_PORT}`);
-      logger.info(`📧 Email user: ${process.env.EMAIL_USER}`);
-      logger.info(`📧 Email password length: ${process.env.EMAIL_PASS?.length || 0}`);
 
       // Use backend URL for API endpoint, not frontend URL
       const backendUrl = process.env.BACKEND_URL || "http://localhost:3000";
@@ -87,11 +64,7 @@ const AuthService = {
 
       logger.info(`📧 Verification link: ${verificationLink}`);
 
-      const mailOptions = {
-        from: process.env.EMAIL_FROM || '"FileVault" <no-reply@filevault.com>',
-        to: email,
-        subject: "Verify your email address",
-        html: `
+      const html = `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
               <h2 style="color: #4a5568;">Welcome to FileVault!</h2>
               <p>Hello ${name},</p>
@@ -114,25 +87,14 @@ const AuthService = {
               
               <p>Best regards,<br>The FileVault Team</p>
             </div>
-          `,
-      };
+          `;
 
-      logger.info(`📧 Mail options prepared. Attempting to send...`);
-      const t = getTransporter();
-      logger.info(`📧 Transporter config: ${JSON.stringify({
-        host: t.options.host,
-        port: t.options.port,
-        secure: t.options.secure,
-        user: t.options.auth?.user
-      })}`);
-
-      await t.sendMail(mailOptions);
+      await sendEmail({ to: email, subject: "Verify your email address", html });
       logger.info(`✔️ Verification email sent successfully to ${email}`);
       return { success: true, message: "Verification email sent" };
     } catch (error) {
       logger.error(`❌ Error in AuthService.sendVerificationEmail: ${error.message}`);
       logger.error(`❌ Error stack: ${error.stack}`);
-      logger.error(`❌ Error code: ${error.code}`);
       throw new Error("Error sending verification email", error.message);
     }
   },
@@ -266,11 +228,7 @@ const AuthService = {
       const baseUrl = process.env.FRONTEND_URL || "http://localhost:3000";
       const resetLink = `${baseUrl}/reset-password?token=${token}`;
 
-      const mailOptions = {
-        from: process.env.EMAIL_FROM || '"FileVault" <no-reply@filevault.com>',
-        to: email,
-        subject: "Reset your password",
-        html: `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      const html = `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #4a5568;">Reset Your Password</h2>
             <p>Hello ${name},</p>
             <p>We received a request to reset your password for your FileVault account. If you didn't make this request, you can safely ignore this email.</p>
@@ -290,9 +248,8 @@ const AuthService = {
             
             <p>Best regards,<br>The FileVault Team</p>
           </div>
-            `,
-      };
-      await getTransporter().sendMail(mailOptions);
+            `;
+      await sendEmail({ to: email, subject: "Reset your password", html });
       logger.info(`✔️ Password reset email sent to ${email}`);
       return { success: true, message: "Password reset email sent" };
     } catch (error) {
