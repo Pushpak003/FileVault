@@ -396,34 +396,17 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👨‍💻 Author
 
-**Hariom Virkhare**
-- GitHub: [@hariomop12](https://github.com/hariomop12)
-- Email: hariomvirkhare02@gmail.com
-- LinkedIn: [hariomop12](https://linkedin.com/in/hariomop12)
+**Pushpak Pathe**
+- GitHub: [@pushpak003](https://github.com/Pushpak003)
+- Email: pushpakpathe63@gmail.com
 
 ---
 
-## 🙏 Acknowledgments
-
-- [Cloudflare R2](https://www.cloudflare.com/products/r2/) for excellent cloud storage
-- [Aiven](https://aiven.io) for managed PostgreSQL hosting
-- [Node.js](https://nodejs.org/) and [React](https://react.dev/) communities
-- All open-source contributors
-
----
-
-## 📞 Support
-
-- 🐛 **Bug Reports:** [GitHub Issues](https://github.com/hariomop12/FileVault/issues)
-- 💡 **Feature Requests:** [GitHub Discussions](https://github.com/hariomop12/FileVault/discussions)
-- 🔒 **Security Issues:** Email directly to hariomvirkhare02@gmail.com
-
----
 
 <div align="center">
 
 **⭐ Star this repo if you find it helpful!**
 
-Made with ❤️ by Hariom Virkhare
+Made with ❤️ by Pushpak
 
 </div>
