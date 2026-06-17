@@ -36,9 +36,6 @@ const Register: React.FC = () => {
       const response = await authService.register(data);
       if (response.success) {
         toast.success('Registration successful! Please check your email to verify your account.');
-        if ((response as any).verificationToken) {
-          toast.success(`Dev mode: Check console for verification link!`, { duration: 10000 });
-        }
         setRegisteredEmail(data.email);
         setShowVerificationPrompt(true);
       } else {
@@ -82,13 +79,8 @@ const Register: React.FC = () => {
               Check Your Email
             </h2>
             <p className={`mb-6 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-              We've sent a verification link to <strong className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>{registeredEmail}</strong>.
+              We've sent a verification link to <strong className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>{registeredEmail}</strong>. Click the link in the email to activate your account.
             </p>
-            <div className={`mb-6 p-4 rounded-xl text-sm border ${
-              theme === 'dark' ? 'bg-blue-500/10 border-blue-500/20 text-blue-300' : 'bg-blue-50 border-blue-200 text-blue-700'
-            }`}>
-              <strong>Development Mode:</strong> Check the browser console for the verification link.
-            </div>
             <div className="space-y-3">
               <button
                 onClick={() => navigate('/login')}
